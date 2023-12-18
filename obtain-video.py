@@ -23,7 +23,7 @@ def get_rtsp_stream_url(url, channel_code, stream_type=0):
         return None
 
 
-def open_video_stream(stream_url, resize_factor=0.5, new_fps=15):
+def open_video_stream(stream_url, resize_factor=0.5, new_fps=30):
     cap = cv2.VideoCapture(stream_url)
     if not cap.isOpened():
         print("Error: Unable to open video stream.")
@@ -63,17 +63,18 @@ def open_video_stream(stream_url, resize_factor=0.5, new_fps=15):
 
 
 def main():
-    rtsp_url = "http://1.192.171.31:19480/hik/petrol/camera/video/rtsp"
-    channel_code = "00099c0d928f4cde95dd48148651d115"
-
-    rtsp_stream_url = get_rtsp_stream_url(rtsp_url, channel_code)
-
-    if rtsp_stream_url:
-        print("RTSP Stream URL:", rtsp_stream_url)
-    else:
-        print("Failed to get RTSP Stream URL.")
-
-    open_video_stream(rtsp_stream_url)
+    # rtsp_url = "http://1.192.171.31:19480/hik/petrol/camera/video/rtsp"
+    # channel_code = "00099c0d928f4cde95dd48148651d115"
+    #
+    # rtsp_stream_url = get_rtsp_stream_url(rtsp_url, channel_code)
+    #
+    # if rtsp_stream_url:
+    #     print("RTSP Stream URL:", rtsp_stream_url)
+    # else:
+    #     print("Failed to get RTSP Stream URL.")
+    #
+    # open_video_stream(rtsp_stream_url)
+    open_video_stream("rtmp://mobliestream.c3tv.com:554/live/goodtv.sdp")
 
 
 if __name__ == "__main__":
