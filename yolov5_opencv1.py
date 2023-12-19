@@ -212,36 +212,37 @@ def draw_numpy(image, boxes, masks=None, classes_ids=None, conf_scores=None):
     return image
    
 def main(args):
-    # 检查参数
+    # check pram
     if not os.path.exists(args.bmodel):
         raise FileNotFoundError('{} is not existed.'.format(args.bmodel))
 
-    # 创建保存路径
+    # define the output file path
     output_dir = "./results"
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
-    # 初始化网络
+    # init model
     yolov5 = YOLOv5(args)
     yolov5.init()
 
-    # 打开视频流
+    # open video frame
     cap = cv2.VideoCapture("rtmp://mobliestream.c3tv.com:554/live/goodtv.sdp")
     if not cap.isOpened():
         print("Error: Unable to open video stream.")
         exit()
 
-    # 获取视频帧率和尺寸
+    # get size and frame
     fps = cap.get(cv2.CAP_PROP_FPS)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-    # 使用 H.264 编解码器，创建 VideoWriter 对象
+    # decode the video stream
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter("output_video.mp4", fourcc, fps, (width, height))
 
-    # 计算十秒钟内的帧数
-    frames_in_ten_seconds = int(fps * 5)
+    # get total frame for 30s
+    seconds=60
+    frames_in_ten_seconds = int(fps * seconds)
     frame_count = 0
 
     while frame_count < frames_in_ten_seconds:
@@ -249,32 +250,26 @@ def main(args):
         if not ret:
             break
 
-        # 处理帧并增加帧计数
+        # process frame
         results = yolov5([frame])
 
-        # 可视化检测结果
+        # draw box for detect target
         for det in results:
-            frame = draw_numpy(frame, det[:,:4], masks=None, classes_ids=det[:, -1], conf_scores=det[:, -2])
 
-        # 写入处理后的帧到文件
+            frame = draw_numpy(frame, det[:,:4], masks=None, classes_ids=det[:, -1], conf_scores=det[:, -2])
+            print("Processing frame number:", frame_count)
+
+            print(frame)
+
+        # write to file
         out.write(frame)
 
 
-
-        # 假设 results 是处理后的帧
-        processed_frame = draw_numpy(frame, results)
-        out.write(processed_frame)
-
         frame_count += 1
 
-        # cv2.imshow("Frame", processed_frame)
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #     break
 
     cap.release()
     out.release()
-    # cv2.destroyAllWindows()
-
 
     # warm up 
     # for i in range(10):
